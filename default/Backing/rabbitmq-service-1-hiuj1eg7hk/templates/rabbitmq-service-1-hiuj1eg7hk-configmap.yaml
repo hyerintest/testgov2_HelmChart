@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.rabbitmq.name }}-config
+  namespace: {{ .Values.namespace }}
+data:
+  enabled_plugins: |
+    [rabbitmq_federation,rabbitmq_management,rabbitmq_peer_discovery_k8s].
+  rabbitmq.conf: |
+    listeners.tcp.default = {{ default 5672 .Values.rabbitmq.targetPort }}
+
+    cluster_formation.peer_discovery_backend = rabbit_peer_discovery_k8s
+    cluster_formation.k8s.host = kubernetes.default.svc.cluster.local
+    cluster_formation.k8s.address_type = hostname
+    cluster_formation.node_cleanup.interval = 10
+    cluster_formation.node_cleanup.only_log_warning = true
+    cluster_partition_handling = autoheal
+    queue_master_locator = min-masters
+
+    cluster_formation.randomized_startup_delay_range.min = 0
+    cluster_formation.randomized_startup_delay_range.max = 2
+    cluster_formation.k8s.hostname_suffix = .{{ .Values.rabbitmq.name }}.{{ .Values.namespace }}.svc.cluster.local
+    cluster_formation.k8s.service_name = {{ .Values.rabbitmq.name }}
+
+    default_user = {{ .Values.rabbitmq.username }}
+    default_pass = {{ .Values.rabbitmq.password }}
+    default_user_tags.administrator = true
+    default_permissions.configure = .*
+    default_permissions.read = .*
+    default_permissions.write = .*
+    loopback_users.guest = true

@@ -1,0 +1,249 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ .Values.rabbitmq.name }}
+  namespace: {{ .Values.namespace }}
+imagePullSecrets:
+  - name: turaco-harbor-registry
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ .Values.rabbitmq.name }}
+  namespace: {{ .Values.namespace }}
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - endpoints
+    verbs:
+      - get
+      - list
+      - watch
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ .Values.rabbitmq.name }}
+  namespace: {{ .Values.namespace }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ .Values.rabbitmq.name }}
+    namespace: {{ .Values.namespace }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ .Values.rabbitmq.name }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ .Values.rabbitmq.name }}-secret
+  namespace: {{ .Values.namespace }}
+type: Opaque
+stringData:
+  host: {{ .Values.rabbitmq.name }}.{{ .Values.namespace }}
+data:
+  RABBITMQ_ERLANG_COOKIE: REVIUE5QRkpXV1VLWUVHVkVPSFA=
+  port: {{ .Values.rabbitmq.port | toString | b64enc | quote }}
+  username: {{ .Values.rabbitmq.username | toString | b64enc | quote }}
+  password: {{ .Values.rabbitmq.password | toString | b64enc | quote }}
+  virtualHost: {{ .Values.rabbitmq.virtualHost | toString | b64enc | quote }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.rabbitmq.name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  ports:
+    - name: http
+      protocol: TCP
+      port: 15672
+      targetPort: 15672
+    - name: amqp
+      protocol: TCP
+      port: {{ .Values.rabbitmq.port }}
+      targetPort: {{ .Values.rabbitmq.targetPort }}
+    - name: discovery
+      protocol: TCP
+      port: 4369
+      targetPort: 4369
+  selector:
+    app: {{ .Values.rabbitmq.name }}
+  clusterIP: None
+  type: ClusterIP
+  sessionAffinity: None
+---
+kind: StatefulSet
+apiVersion: apps/v1
+metadata:
+  name: {{ .Values.rabbitmq.name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.rabbitmq.statefulset.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.rabbitmq.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.rabbitmq.name }}
+    spec:
+      serviceAccount: {{ .Values.rabbitmq.name }}
+      serviceAccountName: {{ .Values.rabbitmq.name }}
+      initContainers:
+        - name: config
+          image: 'busybox:1.33.0'
+          imagePullPolicy: Always
+          command: ['/bin/sh', '-c', 'cp /tmp/config/rabbitmq.conf /config/rabbitmq.conf && ls -l /config/ && cp /tmp/config/enabled_plugins /etc/rabbitmq/enabled_plugins']
+          securityContext:
+            runAsUser: 0
+          volumeMounts:
+            - name: config
+              mountPath: /tmp/config/
+              readOnly: false
+            - name: config-file
+              mountPath: /config/
+            - name: plugins-file
+              mountPath: /etc/rabbitmq/
+      containers:
+        - name: {{ .Values.rabbitmq.name }}
+          image: 'registry.turacocloud.com/turaco-common/rabbitmq:3.8-management'
+          ports:
+            - name: http
+              containerPort: 15672
+              protocol: TCP
+            - name: epmd
+              containerPort: 4369
+              protocol: TCP
+            - name: amqp
+              containerPort: {{ .Values.rabbitmq.port }}
+              protocol: TCP
+          env:
+            - name: RABBIT_POD_NAME
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.name
+            - name: RABBIT_POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: RABBITMQ_NODENAME
+              value: rabbit@$(RABBIT_POD_NAME).{{ .Values.rabbitmq.name }}.$(RABBIT_POD_NAMESPACE).svc.cluster.local
+            - name: RABBITMQ_USE_LONGNAME
+              value: 'true'
+            - name: RABBITMQ_CONFIG_FILE
+              value: '/config/rabbitmq.conf'
+            - name: RABBITMQ_ERLANG_COOKIE
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.rabbitmq.name }}-secret
+                  key: RABBITMQ_ERLANG_COOKIE
+            - name: RABBITMQ_DEFAULT_USER
+              value: {{ .Values.rabbitmq.username }}
+            - name: RABBITMQ_DEFAULT_PASS
+              value: "{{ .Values.rabbitmq.password }}"
+            - name: AUTOCLUSTER_TYPE
+              value: k8s
+            - name: AUTOCLUSTER_DELAY
+              value: '10'
+            - name: AUTOCLUSTER_FAILURE
+              value: stop
+            - name: AUTOCLUSTER_LOG_LEVEL
+              value: debug
+            - name: K8S_ADDRESS_TYPE
+              value: hostname
+            - name: K8S_HOSTNAME_SUFFIX
+              value: .{{ .Values.rabbitmq.name }}.$(RABBIT_POD_NAMESPACE).svc.cluster.local
+          resources:
+            requests:
+              memory: 1Gi
+              cpu: 1
+            {{- if and (ne .Values.rabbitmq.statefulset.resource.limits.memory "0Mi") (ne .Values.rabbitmq.statefulset.resource.limits.memory "0Gi") }}
+            limits:
+              memory: {{ .Values.rabbitmq.statefulset.resource.limits.memory }}
+              cpu: {{ .Values.rabbitmq.statefulset.resource.limits.cpu }}
+            {{- end }}
+          volumeMounts:
+            - name: rabbitmq-persistent-storage
+              mountPath: /var/lib/rabbitmq
+            - name: config-file
+              mountPath: /config/
+            - name: plugins-file
+              mountPath: /etc/rabbitmq/
+          readinessProbe:
+            exec:
+              command:
+                - 'true'
+            initialDelaySeconds: 30
+            timeoutSeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          terminationMessagePath: /termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: Always
+      volumes:
+        - name: config-file
+          emptyDir: {}
+        - name: plugins-file
+          emptyDir: {}
+        - name: config
+          configMap:
+            name: {{ .Values.rabbitmq.name }}-config
+            defaultMode: 0755
+      restartPolicy: Always
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app: {{ .Values.rabbitmq.name }}
+                topologyKey: kubernetes.io/hostname
+      terminationGracePeriodSeconds: 10
+      dnsPolicy: ClusterFirst
+      schedulerName: default-scheduler
+      securityContext:
+        fsGroup: 1001
+        runAsUser: 1001
+  volumeClaimTemplates:
+    - kind: PersistentVolumeClaim
+      apiVersion: v1
+      metadata:
+        name: rabbitmq-persistent-storage
+        annotaions:
+      spec:
+        accessModes: [ "{{ .Values.rabbitmq.accessMode }}" ]
+        resources:
+          requests:
+            storage: {{ .Values.rabbitmq.size }}
+        storageClassName: tlc-nfs-sc
+  serviceName: {{ .Values.rabbitmq.name }}
+  podManagementPolicy: OrderedReady
+  updateStrategy:
+    type: RollingUpdate
+  revisionHistoryLimit: 10
+---  
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ .Values.rabbitmq.statefulset.hpa.name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: StatefulSet
+    name: {{ .Values.rabbitmq.name }}
+  minReplicas: {{ .Values.rabbitmq.statefulset.hpa.minReplicas }}
+  maxReplicas: {{ .Values.rabbitmq.statefulset.hpa.maxReplicas }}
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: {{ .Values.rabbitmq.statefulset.hpa.cpu }}
