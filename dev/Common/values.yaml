@@ -19,12 +19,12 @@ ingress:
       type: ["limit-rps","limit-rps"]
       count: ["",""]
   whitelist: ["",""]
-namespace: -@namespace@-
+namespace: testgov2-dev
 secret:
   name: []
   registry:
     name: regsecret
-    url: -@imageRepoName@-
-    username: -@accessKey@-
-    password: -@secretKey@-
+    url: turaco-dev-registry.turacocloud.com/dev-turaco-workspace-268/turaco
+    username: robot$turaco_common
+    password: Zv7beYWhgCQSOUoxZQK1RGWHdvAMltXx
     email: info@twolinecode.com
