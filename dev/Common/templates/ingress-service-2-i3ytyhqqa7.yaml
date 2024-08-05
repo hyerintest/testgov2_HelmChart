@@ -58,4 +58,11 @@ spec:
               name: egov-springcloud-discovery-1-1hvv0frlg5
               port: 
                 number: 8761
+        - path: /({{ .Values.namespace }}/dis)(/|$)(.*)
+          pathType: Prefix
+          backend:
+            service: 
+              name: egov-springcloud-gateway-1-k58dwvqrpv
+              port: 
+                number: 8080
 

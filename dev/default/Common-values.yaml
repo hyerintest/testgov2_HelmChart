@@ -5,6 +5,7 @@ ingress:
     rewrite_target: /$2
   tls:
     host: ["",""]
+    nrn: 
     crt: ["",""]
     key: ["",""]
   secret:
