@@ -27,7 +27,7 @@ deployment:
     url: turaco-dev-registry.turacocloud.com/dev-turaco-workspace-268/turaco
   image:
     name: backend-service-axiocsr7tw-ilhzi47ydg
-    tag: lastest
+    tag: "7509-4231-backend-service-axiocsr7tw-ilhzi47ydg-bdcc636"
     secret: regsecret
   container:
     name: backend-service-axiocsr7tw-ilhzi47ydg
