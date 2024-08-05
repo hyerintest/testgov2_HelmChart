@@ -65,11 +65,4 @@ spec:
               name: egov-portal-service-iqglnceiqe
               port: 
                 number: 3000
-        - path: /({{ .Values.namespace }}/dis)(/|$)(.*)
-          pathType: Prefix
-          backend:
-            service: 
-              name: egov-springcloud-gateway-1-k58dwvqrpv
-              port: 
-                number: 8080
 
