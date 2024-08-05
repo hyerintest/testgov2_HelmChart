@@ -27,7 +27,7 @@ deployment:
     url: turaco-dev-registry.turacocloud.com/dev-turaco-workspace-268/turaco
   image:
     name: egov-portal-service-iqglnceiqe
-    tag: lastest
+    tag: "7509-4231-egov-portal-service-iqglnceiqe-9389f0b"
     secret: regsecret
   container:
     name: egov-portal-service-iqglnceiqe
