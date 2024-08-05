@@ -27,7 +27,7 @@ deployment:
     url: turaco-dev-registry.turacocloud.com/dev-turaco-workspace-268/turaco
   image:
     name: backend-service-vttbierzoq-sifsp0sz4d
-    tag: lastest
+    tag: "7509-4231-backend-service-vttbierzoq-sifsp0sz4d-73eaf21"
     secret: regsecret
   container:
     name: backend-service-vttbierzoq-sifsp0sz4d
