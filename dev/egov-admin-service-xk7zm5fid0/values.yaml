@@ -27,7 +27,7 @@ deployment:
     url: turaco-dev-registry.turacocloud.com/dev-turaco-workspace-268/turaco
   image:
     name: egov-admin-service-xk7zm5fid0
-    tag: lastest
+    tag: "7509-4231-egov-admin-service-xk7zm5fid0-fcab9a6"
     secret: regsecret
   container:
     name: egov-admin-service-xk7zm5fid0
