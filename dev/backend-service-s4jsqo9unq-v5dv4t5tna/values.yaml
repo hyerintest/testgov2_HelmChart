@@ -10,7 +10,7 @@ service:
   type:
   - ClusterIP
   - NodePort
-namespace: -@namespace@-
+namespace: testgov2-dev
 pvc:
   name: pvc-backend-service-s4jsqo9unq-v5dv4t5tna
   storageClass: tlc-block-sc
@@ -20,15 +20,15 @@ deployment:
   app:
     name: backend-service-s4jsqo9unq-v5dv4t5tna
     type: springboot
-  replicas: -@replicas@-
+  replicas: 1
   update:
     type: RollingUpdate
   repo:
-    url: -@imageRepoName@-
+    url: turaco-dev-registry.turacocloud.com/dev-turaco-workspace-268/turaco
   image:
     name: backend-service-s4jsqo9unq-v5dv4t5tna
     tag: lastest
-    secret: -@repoSecret@-
+    secret: regsecret
   container:
     name: backend-service-s4jsqo9unq-v5dv4t5tna
     port: 3000.0
@@ -36,11 +36,11 @@ deployment:
     name: pvc-backend-service-s4jsqo9unq-v5dv4t5tna
   resource:
     request:
-      memory: -@requestMemory@-
-      cpu: -@requestCpu@-
+      memory: 250Mi
+      cpu: 0.25
     limits:
-      memory: -@limitsMemory@-
-      cpu: -@limitsCpu@-
+      memory: 0Mi
+      cpu: 0
   backing: 
     mariadb:
       name: secret-database-s4jsqo9unq-04nlmg4ro3
@@ -51,7 +51,7 @@ deployment:
     name: []
   hpa:
     name: hpa-backend-service-s4jsqo9unq-v5dv4t5tna
-    minReplicas: -@minReplicas@-
-    maxReplicas: -@maxReplicas@-
-    cpu: -@cpuAutoScale@-
+    minReplicas: 1
+    maxReplicas: 1
+    cpu: 70
     memory: -@memAutoScale@-

@@ -1,4 +1,4 @@
-namespace: -@namespace@-
+namespace: testgov2-dev
 rabbitmq:
   name: rabbitmq-service-1-hiuj1eg7hk
   username: test
@@ -11,17 +11,17 @@ rabbitmq:
   accessMode: ReadWriteOnce
   size: 5Gi
   statefulset:
-    replicas: -@replicas@-
+    replicas: 1
     hpa:
       name: hpa-rabbitmq-service-1-hiuj1eg7hk
-      minReplicas: -@minReplicas@-
-      maxReplicas: -@maxReplicas@-
-      cpu: -@cpuAutoScale@-
+      minReplicas: 1
+      maxReplicas: 1
+      cpu: 70
       memory: -@memAutoScale@-
     resource:
       request:
-        memory: -@requestMemory@-
-        cpu: -@requestCpu@-
+        memory: 2Gi
+        cpu: 1
       limits:
-        memory: -@limitsMemory@-
-        cpu: -@limitsCpu@-
+        memory: 0Gi
+        cpu: 0

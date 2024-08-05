@@ -10,7 +10,7 @@ service:
   type:
   - ClusterIP
   - NodePort
-namespace: -@namespace@-
+namespace: testgov2-dev
 pvc:
   name: pvc-config-pctigguli9
   storageClass: tlc-block-sc
@@ -20,15 +20,15 @@ deployment:
   app:
     name: config-pctigguli9
     type: springboot
-  replicas: -@replicas@-
+  replicas: 1
   update:
     type: RollingUpdate
   repo:
-    url: -@imageRepoName@-
+    url: turaco-dev-registry.turacocloud.com/dev-turaco-workspace-268/turaco
   image:
     name: config-pctigguli9
     tag: lastest
-    secret: -@repoSecret@-
+    secret: regsecret
   container:
     name: config-pctigguli9
     port: 8080
@@ -36,11 +36,11 @@ deployment:
     name: pvc-config-pctigguli9
   resource:
     request:
-      memory: -@requestMemory@-
-      cpu: -@requestCpu@-
+      memory: 250Mi
+      cpu: 0.25
     limits:
-      memory: -@limitsMemory@-
-      cpu: -@limitsCpu@-
+      memory: 0Mi
+      cpu: 0
   backing: 
     rabbitmq:
       name: rabbitmq-service-1-hiuj1eg7hk-secret
@@ -50,7 +50,7 @@ deployment:
     name: []
   hpa:
     name: hpa-config-pctigguli9
-    minReplicas: -@minReplicas@-
-    maxReplicas: -@maxReplicas@-
-    cpu: -@cpuAutoScale@-
+    minReplicas: 1
+    maxReplicas: 1
+    cpu: 70
     memory: -@memAutoScale@-
