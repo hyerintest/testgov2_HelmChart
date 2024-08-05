@@ -27,7 +27,7 @@ deployment:
     url: turaco-dev-registry.turacocloud.com/dev-turaco-workspace-268/turaco
   image:
     name: egov-springcloud-gateway-1-k58dwvqrpv
-    tag: lastest
+    tag: "7509-4231-egov-springcloud-gateway-1-k58dwvqrpv-03c74c7"
     secret: regsecret
   container:
     name: egov-springcloud-gateway-1-k58dwvqrpv
