@@ -10,7 +10,7 @@ service:
   type:
   - ClusterIP
   - NodePort
-namespace: testgov2-dev
+namespace: -@namespace@-
 pvc:
   name: pvc-egov-springcloud-gateway-1-k58dwvqrpv
   storageClass: tlc-block-sc
@@ -20,15 +20,15 @@ deployment:
   app:
     name: egov-springcloud-gateway-1-k58dwvqrpv
     type: egov-springcloud-apigateway
-  replicas: 1
+  replicas: -@replicas@-
   update:
     type: RollingUpdate
   repo:
-    url: turaco-dev-registry.turacocloud.com/dev-turaco-workspace-268/turaco
+    url: -@imageRepoName@-
   image:
     name: egov-springcloud-gateway-1-k58dwvqrpv
-    tag: "7509-4231-egov-springcloud-gateway-1-k58dwvqrpv-fc82dc0"
-    secret: regsecret
+    tag: lastest
+    secret: -@repoSecret@-
   container:
     name: egov-springcloud-gateway-1-k58dwvqrpv
     port: 8080
@@ -36,19 +36,22 @@ deployment:
     name: pvc-egov-springcloud-gateway-1-k58dwvqrpv
   resource:
     request:
-      memory: 250Mi
-      cpu: 0.25
+      memory: -@requestMemory@-
+      cpu: -@requestCpu@-
     limits:
-      memory: 500Mi
-      cpu: 0.5
+      memory: -@limitsMemory@-
+      cpu: -@limitsCpu@-
   backing: 
+    rabbitmq:
+      name: rabbitmq-service-1-hiuj1eg7hk-secret
+
   secret:
     name: []
   configmap:
     name: []
   hpa:
     name: hpa-egov-springcloud-gateway-1-k58dwvqrpv
-    minReplicas: 1
-    maxReplicas: 1
-    cpu: 70
+    minReplicas: -@minReplicas@-
+    maxReplicas: -@maxReplicas@-
+    cpu: -@cpuAutoScale@-
     memory: -@memAutoScale@-

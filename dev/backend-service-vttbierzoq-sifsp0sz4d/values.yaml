@@ -10,7 +10,7 @@ service:
   type:
   - ClusterIP
   - NodePort
-namespace: testgov2-dev
+namespace: -@namespace@-
 pvc:
   name: pvc-backend-service-vttbierzoq-sifsp0sz4d
   storageClass: tlc-block-sc
@@ -20,15 +20,15 @@ deployment:
   app:
     name: backend-service-vttbierzoq-sifsp0sz4d
     type: springboot
-  replicas: 1
+  replicas: -@replicas@-
   update:
     type: RollingUpdate
   repo:
-    url: turaco-dev-registry.turacocloud.com/dev-turaco-workspace-268/turaco
+    url: -@imageRepoName@-
   image:
     name: backend-service-vttbierzoq-sifsp0sz4d
-    tag: "7509-4231-backend-service-vttbierzoq-sifsp0sz4d-7564612"
-    secret: regsecret
+    tag: lastest
+    secret: -@repoSecret@-
   container:
     name: backend-service-vttbierzoq-sifsp0sz4d
     port: 3000.0
@@ -36,11 +36,11 @@ deployment:
     name: pvc-backend-service-vttbierzoq-sifsp0sz4d
   resource:
     request:
-      memory: 250Mi
-      cpu: 0.25
+      memory: -@requestMemory@-
+      cpu: -@requestCpu@-
     limits:
-      memory: 0Mi
-      cpu: 0
+      memory: -@limitsMemory@-
+      cpu: -@limitsCpu@-
   backing: 
     mariadb:
       name: secret-database-vttbierzoq-rh3qwmh3xr
@@ -51,7 +51,7 @@ deployment:
     name: []
   hpa:
     name: hpa-backend-service-vttbierzoq-sifsp0sz4d
-    minReplicas: 1
-    maxReplicas: 1
-    cpu: 70
+    minReplicas: -@minReplicas@-
+    maxReplicas: -@maxReplicas@-
+    cpu: -@cpuAutoScale@-
     memory: -@memAutoScale@-

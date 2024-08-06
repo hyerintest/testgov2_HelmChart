@@ -30,7 +30,7 @@ statefulset:
   spec:
     name: database-s4jsqo9unq-04nlmg4ro3
     servicename: database-s4jsqo9unq-04nlmg4ro3
-  replicas: 1
+  replicas: -@replicas@-
   container:
     name: database-s4jsqo9unq-04nlmg4ro3
     port: 3306.0
@@ -38,25 +38,25 @@ statefulset:
     name: pvc-database-s4jsqo9unq-04nlmg4ro3
   resource:
     request:
-      memory: 250Mi
-      cpu: 0.25
+      memory: -@requestMemory@-
+      cpu: -@requestCpu@-
     limits:
-      memory: 0Mi
-      cpu: 0
+      memory: -@limitsMemory@-
+      cpu: -@limitsCpu@-
   hpa:
     name: hpa-database-s4jsqo9unq-04nlmg4ro3
-    minReplicas: 1
-    maxReplicas: 1
-    cpu: 70
+    minReplicas: -@minReplicas@-
+    maxReplicas: -@maxReplicas@-
+    cpu: -@cpuAutoScale@-
     memory: -@memAutoScale@-
-namespace: testgov2-dev
+namespace: -@namespace@-
 secret:
   name: 
   registry:
     name: regsecret
-    url: turaco-dev-registry.turacocloud.com/dev-turaco-workspace-268/turaco
-    username: robot$turaco_common
-    password: Zv7beYWhgCQSOUoxZQK1RGWHdvAMltXx
+    url: -@imageRepoName@-
+    username: -@accessKey@-
+    password: -@secretKey@-
     email: info@twolinecode.com
 pvc:
   name: pvc-database-s4jsqo9unq-04nlmg4ro3
