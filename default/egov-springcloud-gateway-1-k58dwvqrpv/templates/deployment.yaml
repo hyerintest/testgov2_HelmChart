@@ -47,6 +47,31 @@ spec:
               value: egov-springcloud-discovery-1-1hvv0frlg5
             - name: APIGATEWAY_HOSTNAME
               value: egov-springcloud-gateway-1-k58dwvqrpv
+            - name: MQ_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.deployment.backing.rabbitmq.name }}
+                  key: host
+            - name: MQ_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.deployment.backing.rabbitmq.name }}
+                  key: port
+            - name: MQ_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.deployment.backing.rabbitmq.name }}
+                  key: username
+            - name: MQ_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.deployment.backing.rabbitmq.name }}
+                  key: password
+            - name: MQ_VHOST
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.deployment.backing.rabbitmq.name }}
+                  key: virtualHost
             - name: SERVICE_PATH
               value: /{{ .Values.namespace }}/dis
 
