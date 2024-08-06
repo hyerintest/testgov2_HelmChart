@@ -27,7 +27,7 @@ deployment:
     url: turaco-dev-registry.turacocloud.com/dev-turaco-workspace-268/turaco
   image:
     name: egov-springcloud-discovery-1-1hvv0frlg5
-    tag: lastest
+    tag: "7509-4231-egov-springcloud-discovery-1-1hvv0frlg5-79872d5"
     secret: regsecret
   container:
     name: egov-springcloud-discovery-1-1hvv0frlg5
