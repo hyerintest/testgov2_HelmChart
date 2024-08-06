@@ -10,7 +10,7 @@ service:
   type:
   - ClusterIP
   - NodePort
-namespace: -@namespace@-
+namespace: testgov2-dev
 pvc:
   name: pvc-backend-service-axiocsr7tw-ilhzi47ydg
   storageClass: tlc-block-sc
@@ -20,15 +20,15 @@ deployment:
   app:
     name: backend-service-axiocsr7tw-ilhzi47ydg
     type: springboot
-  replicas: -@replicas@-
+  replicas: 1
   update:
     type: RollingUpdate
   repo:
-    url: -@imageRepoName@-
+    url: turaco-dev-registry.turacocloud.com/dev-turaco-workspace-268/turaco
   image:
     name: backend-service-axiocsr7tw-ilhzi47ydg
     tag: lastest
-    secret: -@repoSecret@-
+    secret: regsecret
   container:
     name: backend-service-axiocsr7tw-ilhzi47ydg
     port: 3000.0
@@ -36,11 +36,11 @@ deployment:
     name: pvc-backend-service-axiocsr7tw-ilhzi47ydg
   resource:
     request:
-      memory: -@requestMemory@-
-      cpu: -@requestCpu@-
+      memory: 250Mi
+      cpu: 0.25
     limits:
-      memory: -@limitsMemory@-
-      cpu: -@limitsCpu@-
+      memory: 0Mi
+      cpu: 0
   backing: 
     mariadb:
       name: secret-database-axiocsr7tw-lmfp2bx7mk
@@ -51,7 +51,7 @@ deployment:
     name: []
   hpa:
     name: hpa-backend-service-axiocsr7tw-ilhzi47ydg
-    minReplicas: -@minReplicas@-
-    maxReplicas: -@maxReplicas@-
-    cpu: -@cpuAutoScale@-
+    minReplicas: 1
+    maxReplicas: 1
+    cpu: 70
     memory: -@memAutoScale@-

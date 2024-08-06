@@ -10,7 +10,7 @@ service:
   type:
   - ClusterIP
   - NodePort
-namespace: -@namespace@-
+namespace: testgov2-dev
 pvc:
   name: pvc-egov-springcloud-discovery-1-1hvv0frlg5
   storageClass: tlc-block-sc
@@ -20,15 +20,15 @@ deployment:
   app:
     name: egov-springcloud-discovery-1-1hvv0frlg5
     type: egov-springcloud-discovery
-  replicas: -@replicas@-
+  replicas: 1
   update:
     type: RollingUpdate
   repo:
-    url: -@imageRepoName@-
+    url: turaco-dev-registry.turacocloud.com/dev-turaco-workspace-268/turaco
   image:
     name: egov-springcloud-discovery-1-1hvv0frlg5
     tag: lastest
-    secret: -@repoSecret@-
+    secret: regsecret
   container:
     name: egov-springcloud-discovery-1-1hvv0frlg5
     port: 8761
@@ -36,11 +36,11 @@ deployment:
     name: pvc-egov-springcloud-discovery-1-1hvv0frlg5
   resource:
     request:
-      memory: -@requestMemory@-
-      cpu: -@requestCpu@-
+      memory: 250Mi
+      cpu: 0.25
     limits:
-      memory: -@limitsMemory@-
-      cpu: -@limitsCpu@-
+      memory: 0Mi
+      cpu: 0
   backing: 
   secret:
     name: []
@@ -48,7 +48,7 @@ deployment:
     name: []
   hpa:
     name: hpa-egov-springcloud-discovery-1-1hvv0frlg5
-    minReplicas: -@minReplicas@-
-    maxReplicas: -@maxReplicas@-
-    cpu: -@cpuAutoScale@-
+    minReplicas: 1
+    maxReplicas: 1
+    cpu: 70
     memory: -@memAutoScale@-
