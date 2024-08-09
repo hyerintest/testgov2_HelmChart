@@ -1,9 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: frontend-config-{{ .Values.deployment.app.name }}
-  namespace: {{ .Values.namespace }}
-data:
-  config.js: |
-    window.APP_SUB_PATH="/{{ .Values.namespace }}/admin"
-    window.API_SUB_PATH="/{{ .Values.namespace }}"
